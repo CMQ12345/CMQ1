@@ -1,0 +1,233 @@
+#include<GL\glew.h>
+#include<iostream>
+#include<windows.h>
+#include<math.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<glut.h>
+ 
+using namespace std;
+
+void DDA(int x0, int y0, int xE, int yE);
+void Point(int x, int y);
+
+void DDA(int x0,int y0,int xE,int yE)
+{
+	int dx = xE - x0, dy = yE - y0, ep, i;
+
+	float xN=x0, yN=y0, xAdd, yAdd;
+	if (abs(dx) > abs(dy))
+		ep = abs(dx);
+	else
+		ep = abs(dy);
+	xAdd = float(dx) / float(ep);
+	yAdd = float(dy) / float(ep);
+	for (i = 0; i <= ep; i++)
+	{
+		Point(int(xN + 0.5), int(yN + 0.5));
+		xN += xAdd;
+		yN += yAdd;
+	};
+}
+
+void midPoint1(int x0, int y0, int xE, int yE)
+{
+	int a, b, d1, d2, d0, d4, d5, x, y;
+	double k;
+	a = y0 - yE;
+	b = xE - x0;
+	k = double(a) / double(b);
+	d0 = 2 * a + b;
+	d1 = 2 * a;
+	d2 = 2 * (a + b);
+	d4 = 2 * b + a;
+	d5 = 2 * b;
+	x = x0;
+	y = y0;
+	Point(x, y);
+	if (abs(k) <= 1)
+	{
+		while (x < xE)
+		{
+			if (d0 < 0)
+			{
+				x++;
+				y++;
+				d0 += d2;
+			}
+			else
+			{
+				x++;
+				d0 += d1;
+			}
+			Point(x, y);
+		}
+	}
+	else
+	{
+		while (y < yE)
+		{
+			if (d4 < 0)
+			{
+				y++;
+				d4 += d5;
+			}
+			else
+			{
+				y++;
+				x++;
+				d4 += d2;
+			}
+			Point(x, y);
+		}
+	}
+}
+
+void midPoint2(int x0, int y0, int xE, int yE)
+{
+	int a, b, d1, d2, d0, d4, d5,d6,d7, x, y;
+	double k;
+	a = y0 - yE;
+	b = xE - x0;
+	k = double(a) / double(b);
+	d0 = 2 * a - b;
+	d1 = 2 * a;
+	d2 = 2 * (a - b);
+	d4 = 2 * b - a;
+	d5 = 2 * b;
+	d6 = a - 2 * b;
+	d7 = -2 * b;
+	x = x0;
+	y = y0;
+	Point(x, y);
+	if (abs(k) <= 1)
+	{
+		while (x < xE)
+		{
+			if (d0 < 0)
+			{
+				x++;
+				d0 += d1;
+			}
+			else
+			{
+				x++;
+				y--;
+				d0 += d2;
+			}
+			Point(x, y);
+		}
+	}
+	else
+	{
+		while (y > yE)
+		{
+			if (d6 < 0)
+			{
+				x++;
+				y--;
+				d6 += d2;
+			}
+			else
+			{
+				y--;
+				d6 += d7;
+			}
+			Point(x, y);
+		}
+	}
+}
+
+void Point(int x, int y)
+{
+	glPointSize(1.0f);
+	glColor4f(0, 0, 0, 0);
+	glBegin(GL_POINTS);
+	glVertex2i(x, y);
+	glEnd();
+	glFlush();
+}
+
+void Display(void)
+{
+	int a;
+	scanf_s("%d",&a);
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	DDA(-400,-100,-400,0);
+	DDA(-400, -100, -300, -150);
+	DDA(-300, -150, 0, -150);
+	DDA(-300, -150, -300, 0);
+	DDA(-300, 0, 0, 0);
+	DDA(0, -150, 0, 0);
+	DDA(-400, 0, -350, 300);
+	DDA(-350, 300, -300, 0);
+	DDA(-350, 300, -50, 300);
+	DDA(-50, 300, 0, 0);
+	DDA(-290,300,-240,0);
+	DDA(-230,300,-180,0);
+	DDA(-170, 300, -120, 0);
+	DDA(-110, 300, -60, 0);
+	DDA(-250,-100,-200,-100); 
+	DDA(-250,-75,-200,-75);
+	DDA(-250,-50,-200,-50);
+	DDA(-250,-100,-250,-50);
+	DDA(-200,-100,-200,-50);
+	DDA(-100,-100,-50,-100);
+	DDA(-100,-75,-50,-75);
+	DDA(-100,-50,-50,-50);
+	DDA(-100,-100,-100,-50);
+	DDA(-50,-100,-50,-50);
+	midPoint1(-35, 200, 50, 200);
+	midPoint1(-7, 40, 200, 40);
+	midPoint1(-14, 80, 190, 80);
+	midPoint1(-21, 120, 180, 120);
+	midPoint1(0, -100, 150, -100);
+	midPoint1(150,-100,150,40);
+	midPoint2(150, 200, 200, 40);
+	midPoint1(100,200,150,200);
+	midPoint2(50, 160, 60, 120);
+	midPoint1(50, 160, 50, 250);
+	midPoint1(50, 250, 100, 250);
+	midPoint1(100, 120, 100, 250);
+	midPoint1(60, 120, 60, 250);
+	midPoint1(-28,160,50,160);
+	midPoint1(100, 160, 160, 160);
+	system("pause");
+}
+
+void ChangeSize(GLsizei w, GLsizei h)
+{
+	GLfloat aspectRatio;
+	GLfloat nRange = 500.0f;
+	if (h == 0)
+		h = 1;
+	glViewport(0, 0, w, h);
+	aspectRatio = (GLfloat)w / (GLfloat)h;
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	if (w <= h)
+		glOrtho(-nRange, nRange, -nRange * h / w, nRange * h / w, -nRange * 5.0f, nRange * 5.0f);
+	else
+		glOrtho(-nRange * w / h, nRange * w / h, -nRange, nRange, -nRange * 5.0f, nRange * 5.0f);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+
+int main(int argc, char** argv)
+{
+	glutInit(&argc,argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(600, 600);
+	glutInitWindowPosition(200, 200);
+	glutCreateWindow("ShiYan1");
+	glutReshapeFunc(ChangeSize);
+	glutDisplayFunc(&Display);
+	glutMainLoop();
+	return 0;
+
+}
