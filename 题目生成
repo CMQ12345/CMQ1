@@ -1,0 +1,119 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include<stdlib.h>
+#include<stdio.h>
+#include<math.h>
+#include<iostream>
+#include<string>
+#include<time.h>
+
+using namespace std;
+
+int figure[10] = { 0 };//储存数字
+char symbol[4] = { 0 };//储存运算符号
+int num = 0;//运算符数量
+int par = 0;//是否使用括号
+int deci = 0;//是否使用小数
+int par1 = 0;//互斥量
+int mid = 0;//中间量
+int getRand(int min, int max);
+int getRand1(int min, int max);
+int getRand1(int min, int max)
+{
+
+	return (rand() % (max - min + 1)) + min;
+}
+int getRand(int min, int max)//获得随机数
+{
+	return (rand() % (max - min + 1)) + min;
+}
+
+void Generate(int max)//生成算式
+{
+	char formula[10];
+	int nlong = 0, i = 0, slong = 0, flag = 0, cho= 0 ;
+	flag = num;
+	nlong = getRand(2, 4);
+	for (i = 0; i < nlong; i++)
+	{
+		figure[i] = getRand(0,max);
+	}
+	slong = nlong - 1;
+	for (i = 0; i < slong; i++)
+	{
+		flag = getRand(0, num-1);
+		switch (flag)
+		{
+		case 0:
+			formula[i] = symbol[0]; break;
+		case 1:
+			formula[i] = symbol[1]; break;
+		case 2:
+			formula[i] = symbol[2]; break;
+		case 3:
+			formula[i] = symbol[3]; break;
+		}
+	}
+	for (i = 0; i < nlong; i++)
+	{
+		if (par == 1 && nlong > 2 && par1==0 && i < nlong - 1)
+		{
+			cho = getRand(0,2);
+			if (cho == i)
+			{
+				printf("(");
+				if (nlong > cho + 3)
+					mid = cho + getRand(1, 2);
+				else mid = cho + 1;
+				par1 = 2;
+			}
+		}
+		printf("%d", figure[i]);
+		if ( par1==2 )
+		{
+			if (mid == i)
+				printf(")");
+			par1 == 3;
+		}
+		if(i<slong)
+		{
+			printf("%c", formula[i]);
+		}
+	}
+	printf("=\n");
+}
+
+int main()
+{
+	srand(time(0));//初始化随机数种子
+	int number = 0, i = 0, sym = 0;//题目数量
+	char flag;
+	printf("请用户输入题目数量：\n");
+	scanf("%d",&number);
+	int min = 0, max = 0;
+	printf("请用户设置最大数：\n");
+	scanf("%d",&max);
+	printf("请用户输入所需应用的运算符数量：\n1:+    2:-   3:*   4:/\n");
+	scanf("%d",&num);
+	printf("请用户输入所需运用的运算符：\n");
+	for (i = 0; i < num; i++)
+	{
+		cin >> symbol[i];
+	}
+	printf("请用户选择是否使用括号：Y/N\n");
+	cin >> flag;
+	if (flag == 'Y')
+		par = 1;
+	else par = 0;
+	printf("请用户选择是否使用小数：Y/N\n");
+	cin >> flag;
+	if (flag == 'Y')
+		deci = 1;
+	else deci = 0;
+	for (i = 0; i < number; i++)
+	{
+		par1 = getRand(0, 1);
+		Generate(max);
+	}
+	return 0;
+}
